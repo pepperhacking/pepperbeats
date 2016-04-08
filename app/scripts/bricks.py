@@ -56,7 +56,6 @@ class BrickEngine(object):
         
     def get_GIMMEWORD(self):
         phrase = "Give me a word!"
-        phrase = "Donne moi un mot!"
         return qi.async(self.ask_for_word, phrase)
 
     def stop(self):
@@ -77,7 +76,7 @@ class BrickEngine(object):
             asr._enableFreeSpeechToText()
         else:
             print "No free speech, sorry :("
-            words = ["ordinateur", "bouteille", "fille", "mec", "clavier", "ecran", "tete"]
+            words = "computer bottle girl keyboard screen guy programmer".split()
             asr.setVocabulary(words, False)
         asr.subscribe("PepperBeats")
         self.word, conf = self.events.wait_for("WordRecognized")
