@@ -145,7 +145,6 @@ class MyClass(GeneratedClass):
                             <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
                             <Parameter name="Executable Name" inherits_from_parent="0" content_type="3" value="pepperbeats" default_value="" custom_choice="0" tooltip="Name of the Executable to run, as declared in the manifest &#x0A;&#x0A;Above version 2.3, the app ID will be automatically added by the system; if you&apos;re with an older NAOqi (e.g. on NAO), it is recommended you give a unique name to avoid conflicts." id="5" />
                         </Box>
-                        <Link inputowner="2" indexofinput="2" outputowner="0" indexofoutput="2" />
                         <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
                         <Link inputowner="0" indexofinput="4" outputowner="1" indexofoutput="4" />
                     </Diagram>

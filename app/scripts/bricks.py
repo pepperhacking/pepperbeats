@@ -6,6 +6,7 @@ Created on Fri Apr  8 22:05:41 2016
 """
 
 import random
+import time
 
 import qi
 
@@ -29,19 +30,26 @@ class BrickEngine(object):
         if not self.brick:
             self.brick = self.get_brick()
 
+    def brick_done(self, fut):
+        print "brick done", self.bricktype
+        self.brick = None
+
     def get_brick(self):
         if self.word:
-            bricktype = random.choice(["POEM", "SING"])
+            self.bricktype = random.choice(["POEM", "SING", "MUSIC", "SILENCE"])
         else:
-            bricktype = random.choice(["GIMMEWORD", "SING"])
+            self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC"])
         #bricktype = random.choice(BRICKTYPES)
-        self.events.set("PepperBeats/Brick", bricktype)
-        return getattr(self, "get_" + bricktype)()
+        print "doing", self.bricktype
+        self.events.set("PepperBeats/Brick", self.bricktype)
+        return getattr(self, "get_" + self.bricktype)().then(self.brick_done)
 
     def get_POEM(self):
         phrase = random.choice([
-            "On m'a parlé de %s",
-            "J'ai revé de %s",
+            "I heard about %s",
+            "There was word of %s",
+            "The word of the street is %s",
+            "I dreamt of %s",
             ]) % self.word
         self.word = None
         return qi.async(self.say, phrase)
@@ -50,9 +58,26 @@ class BrickEngine(object):
         phrase = random.choice([
             "Shabadabada",
             "Yo",
-            "Blip",
+            "jhfjvryjdtrcfgyjbujkybdfvgjkoljkdghfdr",
+            "qseifhbqsdklnh",
+            "dfgjkloiuytghjk",
             ])
         return qi.async(self.say, phrase)
+        
+    def get_SILENCE(self):
+        print 'silence'
+        return qi.async(time.sleep, 2)
+        
+    def get_MUSIC(self):
+        sound = random.choice(["A", "B"])
+        return qi.async(self.play_sound, sound)
+
+    SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
+    package_id = "pepperbeats"
+    def play_sound(self, sound_name):
+        filepath = self.SOUNDPATH.format(self.package_id, sound_name)
+        self.s.ALAudioPlayer.playFile(filepath)
+
         
     def get_GIMMEWORD(self):
         phrase = "Give me a word!"

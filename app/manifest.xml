@@ -21,6 +21,6 @@
   <robotRequirement/>
  </requirements>
  <services>
-  <service autorun="false" name="pepperbeats" execStart="/usr/bin/python2 scripts/pepperbeats.py"/>
+  <service name="pepperbeats" autorun="false" execStart="/usr/bin/python2 scripts/pepperbeats.py"/>
  </services>
 </package>

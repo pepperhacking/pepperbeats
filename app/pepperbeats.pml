@@ -24,6 +24,13 @@
         <File name="runner" src="scripts/stk/runner.pyc" />
         <File name="services" src="scripts/stk/services.py" />
         <File name="services" src="scripts/stk/services.pyc" />
+        <File name="bricks" src="scripts/bricks.py" />
+        <File name="bricks" src="scripts/bricks.pyc" />
+        <File name="A" src="sounds/A.ogg" />
+        <File name="B" src="sounds/B.ogg" />
+        <File name="C" src="sounds/C.ogg" />
+        <File name="D" src="sounds/D.ogg" />
+        <File name="E" src="sounds/E.ogg" />
     </Resources>
     <Topics />
     <IgnoredPaths>

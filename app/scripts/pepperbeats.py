@@ -63,15 +63,23 @@ class ALPepperBeats(object):
         #self.s.ALTextToSpeech.say("blip")
         self.start_loop()
 
+    SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
+    package_id = "pepperbeats"
+    def play_sound(self, sound_name):
+        filepath = self.SOUNDPATH.format(self.package_id, sound_name)
+        self.s.ALAudioPlayer.playFile(filepath)
+
     @stk.logging.log_exceptions
     def loop_update(self):
         self.beat += 1
         if self.beat % 2:
             print "bip_gentle"
-            self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/bip_gentle.wav")
+            self.play_sound("C")
+            #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/bip_gentle.wav")
         else:
             #self.s.ALTextToSpeech.say("tcha")
-            self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
+            self.play_sound("D")
+            #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.brickengine.update()
 
     def start_loop(self):
@@ -81,7 +89,7 @@ class ALPepperBeats(object):
         self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
         self.loop.start(True)
         print dir(self.loop)
-        time.sleep(10)
+        time.sleep(15)
         self.stop()
 
     @qi.nobind
