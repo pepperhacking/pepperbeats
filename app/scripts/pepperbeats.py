@@ -9,6 +9,7 @@ __author__ = 'ekroeger'
 __email__ = 'ekroeger@aldebaran.com'
 
 import time
+import random
 
 import qi
 
@@ -32,6 +33,7 @@ class ALPepperBeats(object):
         # Internal variables
         self.level = 0
         self.running = True
+        self.brick = None
         
     @qi.bind(returnType=qi.Void, paramsType=[qi.Int8])
     def set(self, level):
@@ -60,12 +62,34 @@ class ALPepperBeats(object):
         #self.s.ALTextToSpeech.say("blip")
         self.start_loop()
 
+    @stk.logging.log_exceptions
     def loop_update(self):
         self.beat += 1
         if self.beat % 2:
-            self.s.ALTextToSpeech.say("poum")
+            print "bip_gentle"
+            self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/bip_gentle.wav")
         else:
-            self.s.ALTextToSpeech.say("tcha")
+            #self.s.ALTextToSpeech.say("tcha")
+            self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
+        if not self.brick:
+            self.brick = self.get_brick()
+
+    def get_brick(self):
+        phrase = random.choice([
+            "J'ai vu des ordinateurs",
+            "J'ai vu des geeks",
+            "J'ai vu des filles",
+            "Je suis le robot du futur les gars",
+            "Shabadabada",
+            "Yo",
+            "Blip",
+            ])
+        return qi.async(self.say, phrase)
+
+    @stk.logging.log_exceptions
+    def say(self, phrase):
+        self.s.ALTextToSpeech.say(phrase)
+        self.brick = None
 
     def start_loop(self):
         self.beat = 0
@@ -74,7 +98,7 @@ class ALPepperBeats(object):
         self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
         self.loop.start(True)
         print dir(self.loop)
-        time.sleep(5)
+        time.sleep(10)
         self.stop()
 
     @qi.nobind
