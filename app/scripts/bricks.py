@@ -25,6 +25,7 @@ class BrickEngine(object):
         self.events = context.events
         self.brick = None
         self.word = None
+        self.description = None
     
     def update(self):
         if not self.brick:
@@ -35,24 +36,39 @@ class BrickEngine(object):
         self.brick = None
 
     def get_brick(self):
-        if self.word:
-            self.bricktype = random.choice(["POEM", "SING", "MUSIC", "SILENCE"])
+        if self.word or self.description:
+            self.bricktype = random.choice(["POEM", "POEM", "SING", "MUSIC"])
         else:
-            self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC"])
+            #self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC", "SILENCE"])
+            self.bricktype = random.choice(["INSPIRATION", "INSPIRATION", "SING", "MUSIC", "SILENCE"])
+#            self.bricktype = random.choice(["INSPIRATION"])
         #bricktype = random.choice(BRICKTYPES)
         print "doing", self.bricktype
         self.events.set("PepperBeats/Brick", self.bricktype)
         return getattr(self, "get_" + self.bricktype)().then(self.brick_done)
 
     def get_POEM(self):
-        phrase = random.choice([
-            "I heard about %s",
-            "There was word of %s",
-            "The word of the street is %s",
-            "I dreamt of %s",
-            ]) % self.word
-        self.word = None
+        if self.description:
+            phrase = self.description
+            self.description = None
+        else:
+            phrase = random.choice([
+                "I heard about %s",
+                "There was word of %s",
+                "The word of the street is %s",
+                "I dreamt of %s",
+                ]) % self.word
+            self.word = None
         return qi.async(self.say, phrase)
+
+    def get_INSPIRATION(self):
+        return qi.async(self.inspiration)
+
+    @stk.logging.log_exceptions
+    def inspiration(self):
+        self.s.ALBehaviorManager.runBehavior("picturedesc/.")
+        self.description = self.events.get("PepperBeats/PictureDesc")
+        print "finished inspiration or something, todo", self.description
 
     def get_SING(self):
         phrase = random.choice([
@@ -107,10 +123,7 @@ class BrickEngine(object):
         self.word, conf = self.events.wait_for("WordRecognized")
         asr.unsubscribe("PepperBeats")
         print "Got", self.word, conf
-        if True:
-            self.brick = None
 
     @stk.logging.log_exceptions
     def say(self, phrase):
         self.s.ALTextToSpeech.say(phrase)
-        self.brick = None
