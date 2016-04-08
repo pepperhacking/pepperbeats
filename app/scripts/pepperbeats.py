@@ -18,6 +18,8 @@ import stk.events
 import stk.services
 import stk.logging
 
+import bricks
+
 TENTH_OF_SECOND = 100000
 ONE_SECOND = 1000000
 
@@ -33,7 +35,7 @@ class ALPepperBeats(object):
         # Internal variables
         self.level = 0
         self.running = True
-        self.brick = None
+        self.brickengine = bricks.BrickEngine(self)
         
     @qi.bind(returnType=qi.Void, paramsType=[qi.Int8])
     def set(self, level):
@@ -71,25 +73,7 @@ class ALPepperBeats(object):
         else:
             #self.s.ALTextToSpeech.say("tcha")
             self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
-        if not self.brick:
-            self.brick = self.get_brick()
-
-    def get_brick(self):
-        phrase = random.choice([
-            "J'ai vu des ordinateurs",
-            "J'ai vu des geeks",
-            "J'ai vu des filles",
-            "Je suis le robot du futur les gars",
-            "Shabadabada",
-            "Yo",
-            "Blip",
-            ])
-        return qi.async(self.say, phrase)
-
-    @stk.logging.log_exceptions
-    def say(self, phrase):
-        self.s.ALTextToSpeech.say(phrase)
-        self.brick = None
+        self.brickengine.update()
 
     def start_loop(self):
         self.beat = 0
