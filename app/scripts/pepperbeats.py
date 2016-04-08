@@ -8,6 +8,7 @@ __copyright__ = "Copyright 2015, Aldebaran Robotics"
 __author__ = 'ekroeger'
 __email__ = 'ekroeger@aldebaran.com'
 
+import time
 
 import qi
 
@@ -15,6 +16,9 @@ import stk.runner
 import stk.events
 import stk.services
 import stk.logging
+
+TENTH_OF_SECOND = 100000
+ONE_SECOND = 1000000
 
 class ALPepperBeats(object):
     "NAOqi service example (set/get on a simple value)."
@@ -27,7 +31,8 @@ class ALPepperBeats(object):
         self.logger = stk.logging.get_logger(qiapp.session, self.APP_ID)
         # Internal variables
         self.level = 0
-
+        self.running = True
+        
     @qi.bind(returnType=qi.Void, paramsType=[qi.Int8])
     def set(self, level):
         "Set level"
@@ -50,8 +55,33 @@ class ALPepperBeats(object):
         self.qiapp.stop()
 
     @qi.nobind
+    def on_start(self):
+        "Cleanup (add yours if needed)"
+        #self.s.ALTextToSpeech.say("blip")
+        self.start_loop()
+
+    def loop_update(self):
+        self.beat += 1
+        if self.beat % 2:
+            self.s.ALTextToSpeech.say("poum")
+        else:
+            self.s.ALTextToSpeech.say("tcha")
+
+    def start_loop(self):
+        self.beat = 0
+        self.loop = qi.PeriodicTask()
+        self.loop.setCallback(self.loop_update)
+        self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
+        self.loop.start(True)
+        print dir(self.loop)
+        time.sleep(5)
+        self.stop()
+
+    @qi.nobind
     def on_stop(self):
         "Cleanup (add yours if needed)"
+        if self.loop:
+            self.loop.stop()
         self.logger.info("ALPepperBeats finished.")
 
 ####################
