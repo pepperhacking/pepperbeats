@@ -9,7 +9,6 @@ __author__ = 'ekroeger'
 __email__ = 'ekroeger@aldebaran.com'
 
 import time
-import random
 
 import qi
 
@@ -88,8 +87,10 @@ class ALPepperBeats(object):
     @qi.nobind
     def on_stop(self):
         "Cleanup (add yours if needed)"
+        self.events.clear()
         if self.loop:
             self.loop.stop()
+        self.brickengine.stop()
         self.logger.info("ALPepperBeats finished.")
 
 ####################
