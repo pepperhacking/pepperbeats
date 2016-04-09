@@ -150,12 +150,17 @@ class ALPepperBeats(object):
         if self.beat % 2:
             print "bip_gentle"
             #qi.async(self.play_sound, "C")
-            qi.async(self.s.ALAudioPlayer.playFile, self.beatA)
+            try:
+                self.s.ALAudioPlayer.playFile(self.beatA)
+            except Exception as e:
+                self.s.ALAudioPlayer.playFile(self.beatB)
+            #qi.async(self.s.ALAudioPlayer.playFile, self.beatA)
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/bip_gentle.wav")
         else:
             #self.s.ALTextToSpeech.say("tcha")
             #qi.async(self.play_sound, "D")
-            qi.async(self.s.ALAudioPlayer.playFile, self.beatB)
+            self.s.ALAudioPlayer.playFile(self.beatB)
+            #qi.async(self.s.ALAudioPlayer.playFile, self.beatB)
             #self.play_sound("D")
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.brickengine.update()
@@ -169,7 +174,8 @@ class ALPepperBeats(object):
         self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
         self.loop.start(True)
         #print dir(self.loop)
-        time.sleep(25)
+        time.sleep(40)
+        print "Finished"
 
     @qi.nobind
     def on_stop(self):

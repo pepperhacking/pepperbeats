@@ -45,6 +45,7 @@ class BrickEngine(object):
         self.queue = []
         self.verses = []
         self.allow_anim = True
+        self.image_url = None
 
     def update(self):
         if not self.brick:
@@ -119,9 +120,11 @@ class BrickEngine(object):
         for i, word in enumerate(self.words):
             keyword = "WORD" + str(i)
             if keyword in phrase:
-                image_url = get_pixabay(word)
+                if not self.image_url:
+                    image_url = get_pixabay(word)
+                    self.events.set("PepperBeats/ImageUrl", image_url)
+                    self.image_url = image_url
                 phrase = phrase.replace(keyword, word)
-                self.events.set("PepperBeats/ImageUrl", image_url)
         print "Saying", phrase
         return qi.async(self.say, phrase)
 
