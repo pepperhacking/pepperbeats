@@ -45,7 +45,22 @@ class ALPepperBeats(object):
     def on_start(self):
         "Cleanup (add yours if needed)"
         #self.s.ALTextToSpeech.say("blip")
+        self.record()
         self.start_loop()
+        self.stop()
+
+    RECORDHOME = "/home/nao/"
+
+    def record(self):
+        self.s.ALTextToSpeech.say("Touch my head and gimme some sound!")
+        print "start", self.events.wait_for("FrontTactilTouched")
+        self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
+        self.s.ALAudioDevice.startMicrophonesRecording(self.RECORDHOME + "yoursound.ogg")
+        print "end", self.events.wait_for("FrontTactilTouched")
+        self.s.ALAudioDevice.stopMicrophonesRecording()
+        self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/end_reco.wav")
+        #self.s.ALTextToSpeech.say("And now!")
+        #self.s.ALAudioPlayer.playFile(self.RECORDHOME + "yoursound.ogg")
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
@@ -72,9 +87,8 @@ class ALPepperBeats(object):
         self.loop.setCallback(self.loop_update)
         self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
         self.loop.start(True)
-        print dir(self.loop)
+        #print dir(self.loop)
         time.sleep(15)
-        self.stop()
 
     @qi.nobind
     def on_stop(self):

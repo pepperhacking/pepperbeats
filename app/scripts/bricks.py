@@ -36,10 +36,16 @@ class BrickEngine(object):
 
     def get_brick(self):
         if self.word or self.description:
-            self.bricktype = random.choice(["POEM", "POEM", "SING", "MUSIC"])
+            self.bricktype = random.choice([
+                "POEM", "POEM", "SING", "MUSIC", "YOURSOUND",
+                ])
+            #self.bricktype = "YOURSOUND"
         else:
             #self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC", "SILENCE"])
-            self.bricktype = random.choice(["INSPIRATION", "INSPIRATION", "SING", "MUSIC", "SILENCE"])
+            self.bricktype = random.choice([
+                "INSPIRATION", "INSPIRATION", "SING", "MUSIC", "SILENCE",
+                "YOURSOUND",
+                ])
         #bricktype = random.choice(BRICKTYPES)
         print "doing", self.bricktype
         self.events.set("PepperBeats/Brick", self.bricktype)
@@ -94,6 +100,7 @@ class BrickEngine(object):
             "qseifhbqsdklnh",
             "dfgjkloiuytghjk",
             ])
+        #phrase = "pep pep pepper sdjkfhsdkljhgjklmjhcfgbhjn,kl dfhjsdklfjsdbjfsdnilfgn fodkfosdkfostjirtri dzoup dzoup Peppar is in da house"
         return qi.async(self.say, phrase)
         
     def get_SILENCE(self):
@@ -103,6 +110,10 @@ class BrickEngine(object):
     def get_MUSIC(self):
         sound = random.choice(["A", "B"])
         return qi.async(self.play_sound, sound)
+
+    def get_YOURSOUND(self):
+        filepath = "/home/nao/yoursound.ogg"
+        return qi.async(self.s.ALAudioPlayer.playFile, filepath)
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
