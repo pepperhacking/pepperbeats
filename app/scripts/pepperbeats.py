@@ -108,7 +108,7 @@ class ALPepperBeats(object):
         print "sounds:", sounds
         self.beatA, self.beatB = sounds[:2]
         self.brickengine.set_sounds(sounds[:2])
-        self.s.ALTextToSpeech.say("great!")
+        self.s.ALTextToSpeech.say("This is about what i see. I know my perception is lame.  But when you dare trust me, you can be part of the game !")
         self.animengine.run_anim("WarmUp_1")
         
     def record_simple(self):
@@ -131,9 +131,9 @@ class ALPepperBeats(object):
         self.animengine.run_anim("WarmUp_1")
 
     def ask_for_inspiration(self):
-        self.s.ALTextToSpeech.say("Show me something cool!")
+        self.s.ALTextToSpeech.say("Give me some inspiration!")
         time.sleep(2)
-        qi.async(self.s.ALTextToSpeech.say, "that")
+        qi.async(self.s.ALTextToSpeech.say, "I see something!")
         self.brickengine.inspiration()
         
 

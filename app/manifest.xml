@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<package uuid="pepperbeats" version="0.0.1">
+<package version="0.0.1" uuid="pepperbeats">
  <names>
   <name lang="en_US">pepperbeats</name>
  </names>
@@ -19,6 +19,13 @@
     <sentence lang="en_US">pepa bits</sentence>
     <sentence lang="en_US">pepper bits</sentence>
     <sentence lang="en_US">pepper beat</sentence>
+    <sentence lang="en_US">Hey Pepper, you wanna perform ?</sentence>
+    <sentence lang="en_US">Pepper perform</sentence>
+    <sentence lang="en_US">launch pepper beats</sentence>
+    <sentence lang="en_US">pepper's day to you</sentence>
+    <sentence lang="en_US">a pepper's day</sentence>
+    <sentence lang="en_US">launch pepper's day</sentence>
+    <sentence lang="en_US">launch a pepper's day</sentence>
    </triggerSentences>
    <loadingResponses/>
    <autonomous/>
@@ -30,6 +37,6 @@
   <robotRequirement/>
  </requirements>
  <services>
-  <service name="pepperbeats" autorun="false" execStart="/usr/bin/python2 scripts/pepperbeats.py"/>
+  <service execStart="/usr/bin/python2 scripts/pepperbeats.py" name="pepperbeats" autorun="false"/>
  </services>
 </package>
