@@ -19,8 +19,7 @@ I_SEE_SOME_X_re= re.compile("i see some (.*?) and")
 
 
 VERSES1 = [
-    "maybe",
-    "maybe",
+    "maybe, maybe,",
     "I see a WORD0",
     "Maybe a WORD1",
     "And also a WORD2",
@@ -29,9 +28,8 @@ VERSES1 = [
 VERSES2 = [
     "If you show me WORD0",
     "Maybe you like WORD0",
-    "And if you like WORD0",
     "If you like WORD0",
-    "And also a WORD2",
+    "WORD0 is my inspiration",
 ]
 
 VERSES = [VERSES1, VERSES2]
@@ -67,7 +65,6 @@ class BrickEngine(object):
             "SING", 
             "POEM",
             "YOURSOUND",  
-            "POEM",
             "YOURSOUND",
             #"MUSIC",
         ]
@@ -89,13 +86,15 @@ class BrickEngine(object):
         """
         if not self.queue:
             self.fill_queue()
-        self.bricktype = self.queue.pop()
+        self.bricktype = self.queue.pop(0)
         print "doing", self.bricktype
         self.events.set("PepperBeats/Brick", self.bricktype)
         return getattr(self, "get_" + self.bricktype)().then(self.brick_done)
 
     def get_verses(self):
         self.verses = list(random.choice(VERSES))
+        #print "FILLED VERSES:"
+        #print "\n".join(self.verses)
 
     def get_POEM(self):
         #if self.word:
@@ -115,13 +114,14 @@ class BrickEngine(object):
         #        self.word = None
         if not self.verses:
             self.get_verses()
-        phrase = self.verses.pop()
+        phrase = self.verses.pop(0)
         for i, word in enumerate(self.words):
             keyword = "WORD" + str(i)
             if keyword in phrase:
                 image_url = get_pixabay(word)
                 phrase = phrase.replace(keyword, word)
                 self.events.set("PepperBeats/ImageUrl", image_url)
+        print "Saying", phrase
         return qi.async(self.say, phrase)
 
     #def get_PICTURE(self):

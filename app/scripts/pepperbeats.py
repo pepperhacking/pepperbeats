@@ -23,7 +23,8 @@ import anims
 TENTH_OF_SECOND = 100000
 ONE_SECOND = 1000000
 
-DBGOBJ = True
+DBGOBJ = False
+#DBGOBJ = True
 
 class ALPepperBeats(object):
     "NAOqi service example (set/get on a simple value)."
