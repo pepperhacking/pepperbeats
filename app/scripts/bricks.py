@@ -9,10 +9,13 @@ import random
 import time
 import urllib2
 import json
+import re
 
 import qi
 
 import stk.logging
+
+I_SEE_SOME_X_re= re.compile("i see some (.*?) and")
 
 class BrickEngine(object):
     def __init__(self, context):
@@ -33,8 +36,7 @@ class BrickEngine(object):
 
     def get_brick(self):
         if self.word or self.description:
-            self.bricktype = random.choice(["PICTURE", "POEM", "POEM", "SING", "MUSIC"])
-            #self.bricktype = random.choice(["PICTURE"])
+            self.bricktype = random.choice(["POEM", "POEM", "SING", "MUSIC"])
         else:
             #self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC", "SILENCE"])
             self.bricktype = random.choice(["INSPIRATION", "INSPIRATION", "SING", "MUSIC", "SILENCE"])
@@ -44,6 +46,9 @@ class BrickEngine(object):
         return getattr(self, "get_" + self.bricktype)().then(self.brick_done)
 
     def get_POEM(self):
+        if self.word:
+            image_url = get_pixabay(self.word)
+            self.events.set("PepperBeats/ImageUrl", image_url)
         if self.description:
             phrase = self.description
             self.description = None
@@ -58,12 +63,12 @@ class BrickEngine(object):
                 self.word = None
         return qi.async(self.say, phrase)
 
-    def get_PICTURE(self):
-        image_url = get_pixabay(self.word)
-        if random.random() < 0.5:
-            self.word = None
-        self.events.set("PepperBeats/ImageUrl", image_url)
-        qi.async(time.sleep, 2)
+    #def get_PICTURE(self):
+    #    image_url = get_pixabay(self.word)
+    #    if random.random() < 0.5:
+    #        self.word = None
+    #    self.events.set("PepperBeats/ImageUrl", image_url)
+    #    qi.async(time.sleep, 2)
 
     def get_INSPIRATION(self):
         return qi.async(self.inspiration)
@@ -75,6 +80,10 @@ class BrickEngine(object):
             self.description = self.events.get("PepperBeats/PictureDesc")
         else:
             self.description = "I see some people and some computers and maybe some design"
+        lower = self.description.lower()
+        match = I_SEE_SOME_X_re.match(lower)
+        if match:
+            self.word = match.group(1)
         print "finished inspiration or something, todo", self.description
 
     def get_SING(self):
@@ -152,15 +161,20 @@ def get_gyphy(keyword):
     request = urllib2.Request(url, None, {'Referer': 'testing'})
     response = urllib2.urlopen(request)
     results = json.load(response)
-    result = results["data"][0]
+    result = random.choice(results["data"])
     return result["images"]["original"]["url"]
 
 
 def test_image():
     search_term = "guitar"
     print get_pixabay(search_term)
+
+def test_grep():
+    description = "I see some people and some computers and maybe some design"
+    lower = description.lower()
+    m = I_SEE_SOME_X_re.match(lower)
+    print m.group(1)
     
 if __name__ == "__main__":
-    test_image()
-    
-    
+    #test_image()
+    test_grep()
