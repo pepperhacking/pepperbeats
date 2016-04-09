@@ -50,13 +50,56 @@ class ALPepperBeats(object):
         self.animengine.init()
         self.animengine.run_anim("WarmUp_2")
         self.ask_for_inspiration()
-        self.record()
+        self.record_multiple()
         self.start_loop()
         self.stop()
 
     RECORDHOME = "/home/nao/"
 
-    def record(self):
+    def record_multiple(self):
+        self.events.set("PepperBeats/Brick", "SILENCE")
+        self.s.ALTextToSpeech.say("Now touch my head and gimme some sounds!")
+        by_durations = []
+        for i in range(4):
+            print "start", self.events.wait_for("FrontTactilTouched")
+            self.events.set("PepperBeats/Brick", "RECORDING")
+            self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
+            start = time.time()
+            try:
+                filename = self.RECORDHOME + "yoursound_{}.ogg".format(i)
+                self.s.ALAudioDevice.startMicrophonesRecording(filename)
+                print "end", self.events.wait_for("FrontTactilTouched")
+                duration = time.time() - start
+                by_durations.append((duration, filename))
+                self.events.set("PepperBeats/Brick", "SILENCE")
+                self.s.ALAudioDevice.stopMicrophonesRecording()
+            except RuntimeError as e:
+                print "error recording:", e
+            self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/end_reco.wav")
+            time.sleep(0.5)
+            by_durations.sort()
+            if i <= 2:
+                if i == 2:
+                    tosay = "and a last one?"
+                else:
+                    tosay = "okay, another one?"
+                # Now check if we have something to add
+                if by_durations:
+                    if by_durations[0][0] > 0.5:
+                        tosay += " shorter please?"
+                    elif by_durations[-1][0] < 0.5:
+                        tosay += " shorter please?"
+                self.s.ALTextToSpeech.say(tosay)
+        self.beatA = by_durations[0][0]
+        self.beatB = by_durations[1][0]
+        sounds = [filepath for (dur, filepath) in by_durations]
+        print "sounds:", sounds
+        self.beatA, self.beatB = sounds[:2]
+        self.brickengine.set_sounds(sounds[:2])
+        self.s.ALTextToSpeech.say("great!")
+        self.animengine.run_anim("WarmUp_1")
+        
+    def record_simple(self):
         self.events.set("PepperBeats/Brick", "SILENCE")
         self.s.ALTextToSpeech.say("Now touch my head and gimme some sound!")
         print "start", self.events.wait_for("FrontTactilTouched")
@@ -74,7 +117,7 @@ class ALPepperBeats(object):
         #self.s.ALTextToSpeech.say("And now!")
         #self.s.ALAudioPlayer.playFile(self.RECORDHOME + "yoursound.ogg")
         self.animengine.run_anim("WarmUp_1")
-    
+
     def ask_for_inspiration(self):
         self.s.ALTextToSpeech.say("Show me something cool!")
         time.sleep(2)
@@ -93,11 +136,13 @@ class ALPepperBeats(object):
         self.beat += 1
         if self.beat % 2:
             print "bip_gentle"
-            qi.async(self.play_sound, "C")
+            #qi.async(self.play_sound, "C")
+            qi.async(self.s.ALAudioPlayer.playFile, self.beatA)
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/bip_gentle.wav")
         else:
             #self.s.ALTextToSpeech.say("tcha")
-            qi.async(self.play_sound, "D")
+            #qi.async(self.play_sound, "D")
+            qi.async(self.s.ALAudioPlayer.playFile, self.beatB)
             #self.play_sound("D")
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.brickengine.update()
@@ -119,6 +164,7 @@ class ALPepperBeats(object):
         if self.loop:
             self.loop.stop()
         self.brickengine.stop()
+        self.s.ALAudioPlayer.stopAll()
         self.logger.info("ALPepperBeats finished.")
 
 ####################

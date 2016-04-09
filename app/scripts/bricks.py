@@ -38,10 +38,12 @@ class BrickEngine(object):
     def fill_queue(self):
         self.queue = [
             #"MUSIC", "INSPIRATION", 
-            "MUSIC",
+            #"MUSIC",
+            "YOURSOUND", 
             "POEM", "SING", 
             "YOURSOUND", "BEAT", 
-            "MUSIC",
+            "YOURSOUND",
+            #"MUSIC",
         ]
 
     def get_brick(self):
@@ -124,10 +126,16 @@ class BrickEngine(object):
     def get_MUSIC(self):
         sound = random.choice(["A", "B"])
         return qi.async(self.play_sound, sound)
+    
+    def set_sounds(self, sounds):
+        self.yoursounds = sounds
+        self.toplay = []
 
     def get_YOURSOUND(self):
-        filepath = "/home/nao/yoursound.ogg"
-        return qi.async(self.s.ALAudioPlayer.playFile, filepath)
+        if not self.toplay:
+            self.toplay = list(self.yoursounds)
+        #sfilepath = "/home/nao/yoursound.ogg"
+        return qi.async(self.s.ALAudioPlayer.playFile, self.toplay.pop())
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
