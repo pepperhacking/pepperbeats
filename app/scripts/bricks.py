@@ -17,6 +17,25 @@ import stk.logging
 
 I_SEE_SOME_X_re= re.compile("i see some (.*?) and")
 
+
+VERSES1 = [
+    "maybe",
+    "maybe",
+    "I see a WORD0",
+    "Maybe a WORD1",
+    "And also a WORD2",
+]
+
+VERSES2 = [
+    "If you show me WORD0",
+    "Maybe you like WORD0",
+    "And if you like WORD0",
+    "If you like WORD0",
+    "And also a WORD2",
+]
+
+VERSES = [VERSES1, VERSES2]
+
 class BrickEngine(object):
     def __init__(self, context):
         self.s = context.s
@@ -26,6 +45,7 @@ class BrickEngine(object):
         self.word = None
         self.description = None
         self.queue = []
+        self.verses = []
 
     def update(self):
         if not self.brick:
@@ -39,9 +59,15 @@ class BrickEngine(object):
         self.queue = [
             #"MUSIC", "INSPIRATION", 
             #"MUSIC",
+            "POEM",
+            "BEAT",
+            "POEM",
             "YOURSOUND", 
-            "POEM", "SING", 
-            "YOURSOUND", "BEAT", 
+            "POEM",
+            "SING", 
+            "POEM",
+            "YOURSOUND",  
+            "POEM",
             "YOURSOUND",
             #"MUSIC",
         ]
@@ -68,22 +94,34 @@ class BrickEngine(object):
         self.events.set("PepperBeats/Brick", self.bricktype)
         return getattr(self, "get_" + self.bricktype)().then(self.brick_done)
 
+    def get_verses(self):
+        self.verses = list(random.choice(VERSES))
+
     def get_POEM(self):
-        if self.word:
-            image_url = get_pixabay(self.word)
-            self.events.set("PepperBeats/ImageUrl", image_url)
-        if self.description:
-            phrase = self.description
-            self.description = None
-        else:
-            phrase = random.choice([
-                "I heard about %s",
-                "There was word of %s",
-                "The word of the street is %s",
-                "I dreamt of %s",
-                ]) % self.word
-            if random.random() < 0.5:
-                self.word = None
+        #if self.word:
+        #    image_url = get_pixabay(self.word)
+        #    self.events.set("PepperBeats/ImageUrl", image_url)
+        #if self.description:
+        #    phrase = self.description
+        #    self.description = None
+        #else:
+        #    phrase = random.choice([
+        #        "I heard about %s",
+        #        "There was word of %s",
+        #        "The word of the street is %s",
+        #        "I dreamt of %s",
+        #        ]) % self.word
+        #    if random.random() < 0.5:
+        #        self.word = None
+        if not self.verses:
+            self.get_verses()
+        phrase = self.verses.pop()
+        for i, word in enumerate(self.words):
+            keyword = "WORD" + str(i)
+            if keyword in phrase:
+                image_url = get_pixabay(word)
+                phrase = phrase.replace(keyword, word)
+                self.events.set("PepperBeats/ImageUrl", image_url)
         return qi.async(self.say, phrase)
 
     #def get_PICTURE(self):
@@ -103,10 +141,11 @@ class BrickEngine(object):
             self.description = self.events.get("PepperBeats/PictureDesc")
         else:
             self.description = "I see some people and some computers and maybe some design"
-        lower = self.description.lower()
-        match = I_SEE_SOME_X_re.match(lower)
-        if match:
-            self.word = match.group(1)
+        self.words = get_words(self.description)
+        #lower = self.description.lower()
+        #match = I_SEE_SOME_X_re.match(lower)
+        #if match:
+        #    self.word = match.group(1)
         print "finished inspiration or something, todo", self.description
 
     def get_SING(self):
@@ -202,12 +241,33 @@ def test_image():
     search_term = "guitar"
     print get_pixabay(search_term)
 
+I_SEE_SOME_X_123_re= re.compile("i see some (.*?) and some (.*?) and maybe some (.*)")
+
+def get_words(phrase):
+    lower = phrase.lower()
+    m = I_SEE_SOME_X_123_re.match(lower)
+    if m:
+        return m.groups()
+    else:
+        m = I_SEE_SOME_X_re.match(lower)
+        return m.groups()
+
 def test_grep():
     description = "I see some people and some computers and maybe some design"
     lower = description.lower()
     m = I_SEE_SOME_X_re.match(lower)
     print m.group(1)
     
+def test_grep2():
+    description = "I see some people and some computers and maybe some design"
+    lower = description.lower()
+    m = I_SEE_SOME_X_123_re.match(lower)
+    print m.groups()
+    
+def test_grep3():
+    description = "I see some people and some computers and maybe some design"
+    print get_words(description)
+    
 if __name__ == "__main__":
     #test_image()
-    test_grep()
+    test_grep3()

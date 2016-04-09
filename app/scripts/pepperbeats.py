@@ -23,6 +23,8 @@ import anims
 TENTH_OF_SECOND = 100000
 ONE_SECOND = 1000000
 
+DBGOBJ = True
+
 class ALPepperBeats(object):
     "NAOqi service example (set/get on a simple value)."
     APP_ID = "com.aldebaran.ALPepperBeats"
@@ -50,6 +52,15 @@ class ALPepperBeats(object):
         self.animengine.init()
         self.animengine.run_anim("WarmUp_2")
         self.ask_for_inspiration()
+        if DBGOBJ:
+            self.s.ALTextToSpeech.say(self.brickengine.description)
+            self.ask_for_inspiration()
+            self.s.ALTextToSpeech.say(self.brickengine.description)
+            self.ask_for_inspiration()
+            self.s.ALTextToSpeech.say(self.brickengine.description)
+            self.s.ALTextToSpeech.say("Finished")
+            self.stop()
+            return
         self.record_multiple()
         self.start_loop()
         self.stop()
@@ -123,6 +134,7 @@ class ALPepperBeats(object):
         time.sleep(2)
         qi.async(self.s.ALTextToSpeech.say, "that")
         self.brickengine.inspiration()
+        
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
