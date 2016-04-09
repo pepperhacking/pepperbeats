@@ -18,6 +18,7 @@ import stk.services
 import stk.logging
 
 import bricks
+import anims
 
 TENTH_OF_SECOND = 100000
 ONE_SECOND = 1000000
@@ -34,6 +35,7 @@ class ALPepperBeats(object):
         # Internal variables
         self.running = True
         self.brickengine = bricks.BrickEngine(self)
+        self.animengine = anims.AnimEngine(self)
 
     @qi.bind(returnType=qi.Void, paramsType=[])
     def stop(self):
@@ -45,7 +47,8 @@ class ALPepperBeats(object):
     def on_start(self):
         "Cleanup (add yours if needed)"
         #self.s.ALTextToSpeech.say("blip")
-        #self.record()
+        self.ask_for_inspiration()
+        self.record()
         self.start_loop()
         self.stop()
 
@@ -53,7 +56,7 @@ class ALPepperBeats(object):
 
     def record(self):
         self.events.set("PepperBeats/Brick", "SILENCE")
-        self.s.ALTextToSpeech.say("Touch my head and gimme some sound!")
+        self.s.ALTextToSpeech.say("Now touch my head and gimme some sound!")
         print "start", self.events.wait_for("FrontTactilTouched")
         self.events.set("PepperBeats/Brick", "RECORDING")
         self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
@@ -65,6 +68,12 @@ class ALPepperBeats(object):
         time.sleep(1)
         #self.s.ALTextToSpeech.say("And now!")
         #self.s.ALAudioPlayer.playFile(self.RECORDHOME + "yoursound.ogg")
+    
+    def ask_for_inspiration(self):
+        self.s.ALTextToSpeech.say("Show me something cool!")
+        time.sleep(2)
+        qi.async(self.s.ALTextToSpeech.say, "that")
+        self.brickengine.inspiration()
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
@@ -86,6 +95,7 @@ class ALPepperBeats(object):
             #self.play_sound("D")
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.brickengine.update()
+        self.animengine.update(self.beat)
 
     def start_loop(self):
         self.beat = 0
@@ -94,7 +104,7 @@ class ALPepperBeats(object):
         self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
         self.loop.start(True)
         #print dir(self.loop)
-        time.sleep(15)
+        time.sleep(20)
 
     @qi.nobind
     def on_stop(self):

@@ -31,6 +31,8 @@
         <File name="C" src="sounds/C.ogg" />
         <File name="D" src="sounds/D.ogg" />
         <File name="E" src="sounds/E.ogg" />
+        <File name="anims" src="scripts/anims.py" />
+        <File name="anims" src="scripts/anims.pyc" />
     </Resources>
     <Topics />
     <IgnoredPaths>

@@ -37,7 +37,10 @@ class BrickEngine(object):
         
     def fill_queue(self):
         self.queue = [
-            "MUSIC", "INSPIRATION", "YOURSOUND", "BEAT", "POEM", "SING", 
+            #"MUSIC", "INSPIRATION", 
+            "MUSIC",
+            "POEM", "SING", 
+            "YOURSOUND", "BEAT", 
             "MUSIC",
         ]
 
