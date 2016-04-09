@@ -5,7 +5,7 @@ Created on Sat Apr  9 14:00:25 2016
 @author: ekroeger
 """
 
-import random
+#import random
 import time
 
 import qi
@@ -22,6 +22,18 @@ class AnimEngine(object):
         self.head = None
         self.description = None
         self.queue = []
+        
+    def init(self):
+        self.run_anim("NoSafety")
+        try:
+            self.s.ALAutonomousMoves.setBackgroundStrategy('none')
+            self.s.ALBasicAwareness.stopAwareness()
+
+            self.s.ALMotion.setMotionConfig([["ENABLE_DEACTIVATION_OF_FALL_MANAGER", True]])
+            time.sleep(0.1)
+            self.s.ALMotion.setExternalCollisionProtectionEnabled("All", False)
+        except Exception as e:
+            self.logger.info("error : " + str(e))
 
     @stk.logging.log_exceptions
     def run_anim(self, name):
@@ -30,9 +42,7 @@ class AnimEngine(object):
 
     def update(self, beat):
         if (beat % 4) == 2:
-            if (beat % 16 == 2):
-                self.left   = qi.async(self.run_anim, "Arm_L")
-            elif (beat % 16 == 10):
+            if (beat % 8 == 2):
                 self.left   = qi.async(self.run_anim, "Arm_R")
             else:
                 self.left   = qi.async(self.run_anim, "Arm_L")

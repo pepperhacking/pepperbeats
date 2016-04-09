@@ -47,6 +47,8 @@ class ALPepperBeats(object):
     def on_start(self):
         "Cleanup (add yours if needed)"
         #self.s.ALTextToSpeech.say("blip")
+        self.animengine.init()
+        self.animengine.run_anim("WarmUp_2")
         self.ask_for_inspiration()
         self.record()
         self.start_loop()
@@ -60,14 +62,18 @@ class ALPepperBeats(object):
         print "start", self.events.wait_for("FrontTactilTouched")
         self.events.set("PepperBeats/Brick", "RECORDING")
         self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
-        self.s.ALAudioDevice.startMicrophonesRecording(self.RECORDHOME + "yoursound.ogg")
-        print "end", self.events.wait_for("FrontTactilTouched")
-        self.events.set("PepperBeats/Brick", "SILENCE")
-        self.s.ALAudioDevice.stopMicrophonesRecording()
+        try:
+            self.s.ALAudioDevice.startMicrophonesRecording(self.RECORDHOME + "yoursound.ogg")
+            print "end", self.events.wait_for("FrontTactilTouched")
+            self.events.set("PepperBeats/Brick", "SILENCE")
+            self.s.ALAudioDevice.stopMicrophonesRecording()
+        except RuntimeError as e:
+            print "error recording:", e
         self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/end_reco.wav")
         time.sleep(1)
         #self.s.ALTextToSpeech.say("And now!")
         #self.s.ALAudioPlayer.playFile(self.RECORDHOME + "yoursound.ogg")
+        self.animengine.run_anim("WarmUp_1")
     
     def ask_for_inspiration(self):
         self.s.ALTextToSpeech.say("Show me something cool!")
