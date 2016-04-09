@@ -45,7 +45,7 @@ class ALPepperBeats(object):
     def on_start(self):
         "Cleanup (add yours if needed)"
         #self.s.ALTextToSpeech.say("blip")
-        self.record()
+        #self.record()
         self.start_loop()
         self.stop()
 

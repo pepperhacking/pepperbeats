@@ -13,6 +13,15 @@
   <behaviorContent path=".">
    <userRequestable/>
    <nature>interactive</nature>
+   <triggerSentences>
+    <sentence lang="en_US">pepper  beats</sentence>
+    <sentence lang="en_US">pepa beats</sentence>
+    <sentence lang="en_US">pepa bits</sentence>
+    <sentence lang="en_US">pepper bits</sentence>
+    <sentence lang="en_US">pepper beat</sentence>
+   </triggerSentences>
+   <loadingResponses/>
+   <autonomous/>
    <permissions/>
   </behaviorContent>
  </contents>

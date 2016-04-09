@@ -25,7 +25,8 @@ class BrickEngine(object):
         self.brick = None
         self.word = None
         self.description = None
-    
+        self.queue = []
+
     def update(self):
         if not self.brick:
             self.brick = self.get_brick()
@@ -33,8 +34,15 @@ class BrickEngine(object):
     def brick_done(self, fut):
         print "brick done", self.bricktype
         self.brick = None
+        
+    def fill_queue(self):
+        self.queue = [
+            "MUSIC", "INSPIRATION", "YOURSOUND", "BEAT", "POEM", "SING", 
+            "MUSIC",
+        ]
 
     def get_brick(self):
+        """"
         if self.word or self.description:
             self.bricktype = random.choice([
                 "POEM", "POEM", "SING", "MUSIC", "YOURSOUND",
@@ -47,6 +55,10 @@ class BrickEngine(object):
                 "YOURSOUND",
                 ])
         #bricktype = random.choice(BRICKTYPES)
+        """
+        if not self.queue:
+            self.fill_queue()
+        self.bricktype = self.queue.pop()
         print "doing", self.bricktype
         self.events.set("PepperBeats/Brick", self.bricktype)
         return getattr(self, "get_" + self.bricktype)().then(self.brick_done)
