@@ -43,7 +43,7 @@ class BrickEngine(object):
         else:
             #self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC", "SILENCE"])
             self.bricktype = random.choice([
-                "INSPIRATION", "INSPIRATION", "SING", "MUSIC", "SILENCE",
+                "INSPIRATION", "INSPIRATION", "SING", "MUSIC", "BEAT",
                 "YOURSOUND",
                 ])
         #bricktype = random.choice(BRICKTYPES)
@@ -103,9 +103,8 @@ class BrickEngine(object):
         #phrase = "pep pep pepper sdjkfhsdkljhgjklmjhcfgbhjn,kl dfhjsdklfjsdbjfsdnilfgn fodkfosdkfostjirtri dzoup dzoup Peppar is in da house"
         return qi.async(self.say, phrase)
         
-    def get_SILENCE(self):
-        print 'silence'
-        return qi.async(time.sleep, 2)
+    def get_BEAT(self):
+        return qi.async(time.sleep, 1.9)
         
     def get_MUSIC(self):
         sound = random.choice(["A", "B"])

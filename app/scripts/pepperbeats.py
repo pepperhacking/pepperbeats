@@ -52,18 +52,23 @@ class ALPepperBeats(object):
     RECORDHOME = "/home/nao/"
 
     def record(self):
+        self.events.set("PepperBeats/Brick", "SILENCE")
         self.s.ALTextToSpeech.say("Touch my head and gimme some sound!")
         print "start", self.events.wait_for("FrontTactilTouched")
+        self.events.set("PepperBeats/Brick", "RECORDING")
         self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.s.ALAudioDevice.startMicrophonesRecording(self.RECORDHOME + "yoursound.ogg")
         print "end", self.events.wait_for("FrontTactilTouched")
+        self.events.set("PepperBeats/Brick", "SILENCE")
         self.s.ALAudioDevice.stopMicrophonesRecording()
         self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/end_reco.wav")
+        time.sleep(1)
         #self.s.ALTextToSpeech.say("And now!")
         #self.s.ALAudioPlayer.playFile(self.RECORDHOME + "yoursound.ogg")
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
+
     def play_sound(self, sound_name):
         filepath = self.SOUNDPATH.format(self.package_id, sound_name)
         self.s.ALAudioPlayer.playFile(filepath)
@@ -73,11 +78,12 @@ class ALPepperBeats(object):
         self.beat += 1
         if self.beat % 2:
             print "bip_gentle"
-            self.play_sound("C")
+            qi.async(self.play_sound, "C")
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/bip_gentle.wav")
         else:
             #self.s.ALTextToSpeech.say("tcha")
-            self.play_sound("D")
+            qi.async(self.play_sound, "D")
+            #self.play_sound("D")
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.brickengine.update()
 
