@@ -168,7 +168,7 @@ class ALPepperBeats(object):
         self.loop.setUsPeriod(5 * TENTH_OF_SECOND)
         self.loop.start(True)
         #print dir(self.loop)
-        time.sleep(20)
+        time.sleep(25)
 
     @qi.nobind
     def on_stop(self):

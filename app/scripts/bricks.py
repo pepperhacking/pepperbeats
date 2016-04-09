@@ -149,15 +149,18 @@ class BrickEngine(object):
         print "finished inspiration or something, todo", self.description
 
     def get_SING(self):
-        phrase = random.choice([
-            "Shabadabada",
-            "Yo",
-            "jhfjvryjdtrcfgyjbujkybdfvgjkoljkdghfdr",
-            "qseifhbqsdklnh",
-            "dfgjkloiuytghjk",
-            ])
-        #phrase = "pep pep pepper sdjkfhsdkljhgjklmjhcfgbhjn,kl dfhjsdklfjsdbjfsdnilfgn fodkfosdkfostjirtri dzoup dzoup Peppar is in da house"
-        return qi.async(self.say, phrase)
+        if False: # Hard coded
+            phrase = random.choice([
+                "Shabadabada",
+                "Yo",
+                "jhfjvryjdtrcfgyjbujkybdfvgjkoljkdghfdr",
+                "qseifhbqsdklnh",
+                "dfgjkloiuytghjk",
+                ])
+            #phrase = "pep pep pepper sdjkfhsdkljhgjklmjhcfgbhjn,kl dfhjsdklfjsdbjfsdnilfgn fodkfosdkfostjirtri dzoup dzoup Peppar is in da house"
+            return qi.async(self.say, phrase)
+        else:
+            return qi.async(self.s.ALBehaviorManager.runBehavior, "randomstring/behavior_long")
         
     def get_BEAT(self):
         return qi.async(time.sleep, 1.9)
