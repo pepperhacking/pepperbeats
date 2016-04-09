@@ -44,6 +44,7 @@ class BrickEngine(object):
         self.description = None
         self.queue = []
         self.verses = []
+        self.allow_anim = True
 
     def update(self):
         if not self.brick:
@@ -174,10 +175,32 @@ class BrickEngine(object):
         self.toplay = []
 
     def get_YOURSOUND(self):
+        if True:
+            print "swirl?"
+            return qi.async(self.run_danse_twirling)
         if not self.toplay:
             self.toplay = list(self.yoursounds)
         #sfilepath = "/home/nao/yoursound.ogg"
-        return qi.async(self.s.ALAudioPlayer.playFile, self.toplay.pop())
+        return qi.async(self.s.ALAudioPlayer.playFile, self.toplay.pop(0))
+
+    @stk.logging.log_exceptions
+    def run_danse_twirling(self):
+        #qi.async(self.s.ALAudioPlayer.playFile, self.yoursounds[-1])
+        #self.s.ALBehaviorManager.runBehavior("haxlux/Turn")
+        longest_sound = self.yoursounds[-1]
+        print "dancing", longest_sound
+        try:
+            time.sleep(0.5)
+            self.allow_anim = False
+            self.s.ALAudioPlayer.stopAll()
+            self.s.ALAudioPlayer.playFile(longest_sound)
+            qi.async(self.s.ALBehaviorManager.runBehavior, "haklux/Turn")
+        except Exception as e:
+            print "Weird twirling error:", e
+            self.s.ALBehaviorManager.runBehavior("haklux/Turn")
+        time.sleep(1.0)
+        self.allow_anim = True
+        print "danced"
 
     SOUNDPATH = "/home/nao/.local/share/PackageManager/apps/{0}/sounds/{1}.ogg"
     package_id = "pepperbeats"
@@ -222,13 +245,17 @@ class BrickEngine(object):
 def get_pixabay(keyword):
     url="https://pixabay.com/api/?key=2007282-2872cc698022c3e8b724e53a6&q=%s&image_type=photo" \
         % keyword
-    request = urllib2.Request(url, None, {'Referer': 'testing'})
-    response = urllib2.urlopen(request)
-    results = json.load(response)
-    hits = results["hits"]
-    if hits:
-        return hits[0]["webformatURL"]
-    else:
+    try:
+        request = urllib2.Request(url, None, {'Referer': 'testing'})
+        response = urllib2.urlopen(request)
+        results = json.load(response)
+        hits = results["hits"]
+        if hits:
+            return hits[0]["webformatURL"]
+        else:
+            return None
+    except Exception as e:
+        print "Got pixabay error:", e
         return None
 
 def get_gyphy(keyword):

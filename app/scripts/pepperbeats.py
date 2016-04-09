@@ -105,9 +105,9 @@ class ALPepperBeats(object):
         self.beatA = by_durations[0][0]
         self.beatB = by_durations[1][0]
         sounds = [filepath for (dur, filepath) in by_durations]
-        print "sounds:", sounds
+        print "sounds by_durations:", by_durations
         self.beatA, self.beatB = sounds[:2]
-        self.brickengine.set_sounds(sounds[:2])
+        self.brickengine.set_sounds(sounds[2:])
         self.s.ALTextToSpeech.say("This is about what i see. I know my perception is lame.  But when you dare trust me, you can be part of the game !")
         self.animengine.run_anim("WarmUp_1")
         
@@ -159,7 +159,8 @@ class ALPepperBeats(object):
             #self.play_sound("D")
             #self.s.ALAudioPlayer.playFile("/usr/share/naoqi/wav/begin_reco.wav")
         self.brickengine.update()
-        self.animengine.update(self.beat)
+        if self.brickengine.allow_anim:
+            self.animengine.update(self.beat)
 
     def start_loop(self):
         self.beat = 0
