@@ -7,16 +7,12 @@ Created on Fri Apr  8 22:05:41 2016
 
 import random
 import time
+import urllib2
+import json
 
 import qi
 
 import stk.logging
-
-BRICKTYPES = [
-    #"SING",
-    #"POEM",
-    "GIMMEWORD",
-]
 
 class BrickEngine(object):
     def __init__(self, context):
@@ -37,11 +33,11 @@ class BrickEngine(object):
 
     def get_brick(self):
         if self.word or self.description:
-            self.bricktype = random.choice(["POEM", "POEM", "SING", "MUSIC"])
+            self.bricktype = random.choice(["PICTURE", "POEM", "POEM", "SING", "MUSIC"])
+            #self.bricktype = random.choice(["PICTURE"])
         else:
             #self.bricktype = random.choice(["GIMMEWORD", "SING", "MUSIC", "SILENCE"])
             self.bricktype = random.choice(["INSPIRATION", "INSPIRATION", "SING", "MUSIC", "SILENCE"])
-#            self.bricktype = random.choice(["INSPIRATION"])
         #bricktype = random.choice(BRICKTYPES)
         print "doing", self.bricktype
         self.events.set("PepperBeats/Brick", self.bricktype)
@@ -58,16 +54,27 @@ class BrickEngine(object):
                 "The word of the street is %s",
                 "I dreamt of %s",
                 ]) % self.word
-            self.word = None
+            if random.random() < 0.5:
+                self.word = None
         return qi.async(self.say, phrase)
+
+    def get_PICTURE(self):
+        image_url = get_pixabay(self.word)
+        if random.random() < 0.5:
+            self.word = None
+        self.events.set("PepperBeats/ImageUrl", image_url)
+        qi.async(time.sleep, 2)
 
     def get_INSPIRATION(self):
         return qi.async(self.inspiration)
 
     @stk.logging.log_exceptions
     def inspiration(self):
-        self.s.ALBehaviorManager.runBehavior("picturedesc/.")
-        self.description = self.events.get("PepperBeats/PictureDesc")
+        if self.s.ALBehaviorManager.isBehaviorInstalled("picturedesc/."):
+            self.s.ALBehaviorManager.runBehavior("picturedesc/.")
+            self.description = self.events.get("PepperBeats/PictureDesc")
+        else:
+            self.description = "I see some people and some computers and maybe some design"
         print "finished inspiration or something, todo", self.description
 
     def get_SING(self):
@@ -127,3 +134,33 @@ class BrickEngine(object):
     @stk.logging.log_exceptions
     def say(self, phrase):
         self.s.ALTextToSpeech.say(phrase)
+
+def get_pixabay(keyword):
+    url="https://pixabay.com/api/?key=2007282-2872cc698022c3e8b724e53a6&q=%s&image_type=photo" \
+        % keyword
+    request = urllib2.Request(url, None, {'Referer': 'testing'})
+    response = urllib2.urlopen(request)
+    results = json.load(response)
+    hits = results["hits"]
+    if hits:
+        return hits[0]["webformatURL"]
+    else:
+        return None
+
+def get_gyphy(keyword):
+    url="http://api.giphy.com/v1/gifs/search?q=%s&limit=1&api_key=dc6zaTOxFJmzC" % keyword
+    request = urllib2.Request(url, None, {'Referer': 'testing'})
+    response = urllib2.urlopen(request)
+    results = json.load(response)
+    result = results["data"][0]
+    return result["images"]["original"]["url"]
+
+
+def test_image():
+    search_term = "guitar"
+    print get_pixabay(search_term)
+    
+if __name__ == "__main__":
+    test_image()
+    
+    

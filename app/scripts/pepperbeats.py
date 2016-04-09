@@ -107,4 +107,3 @@ class ALPepperBeats(object):
 
 if __name__ == "__main__":
     stk.runner.run_service(ALPepperBeats)
-
